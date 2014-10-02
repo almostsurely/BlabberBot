@@ -1,0 +1,1 @@
+SELECT DISTINCT words.wordid, words.lemma, x.pos FROM words LEFT OUTER JOIN (SELECT senses.wordid, synsets.pos FROM senses LEFT OUTER JOIN synsets ON senses.synsetid = synsets.synsetid) AS x ON words.wordid = x.wordid;
