@@ -75,14 +75,17 @@ def generate_sentence():
     return ' '.join(sentence) + '.'
 
 
-def send_to_twitter(s):
+def send_to_twitter(s, reply_id):
     """
     Send a sentence to post on Twitter.
     :param s: Sentence to post.
     :return: None
     """
 
-    twit.statuses.update(status=s)
+    if reply_id:
+        twit.statuses.update(status=s, in_reply_to_status_id=reply_id)
+    else:
+        twit.statuses.update(status=s)
 
 
 def respond_to_users():
@@ -97,16 +100,16 @@ def respond_to_users():
     time_line = twit.statuses.mentions_timeline(count=200)
 
     for tweet in time_line:
-        if tweet['id'] in replied:
+        tid = tweet['id']
+        if tid in replied:
             continue
-        id = tweet['id']
-        replied.append(id)
+        replied.append(tid)
 
         user = tweet['user']['screen_name']
         s = generate_sentence()
         s = ' '.join(('@%s' % user, s))
 
-        send_to_twitter(s)
+        send_to_twitter(s, tid)
 
     with open('replied.json', 'w') as replied_file:
         json.dump({'replied': replied}, replied_file)
@@ -133,7 +136,7 @@ parser.add_argument('-r', '--reply', help='Reply to the world.', action='store_t
 args = parser.parse_args()
 
 if args.speak:
-    send_to_twitter(generate_sentence())
+    send_to_twitter(generate_sentence(), None)
 
 if args.reply:
     respond_to_users()
