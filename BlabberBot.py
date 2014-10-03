@@ -1,9 +1,11 @@
 __author__ = 'James Dozier'
 
+import argparse
 import configparser
 import sqlite3
 import random
 import twitter
+import json
 
 
 def setup_config():
@@ -80,20 +82,58 @@ def send_to_twitter(s):
     :return: None
     """
 
-    twit = twitter.Twitter(
-        auth=twitter.OAuth(
-            config['Twitter']['token'],
-            config['Twitter']['token_secret'],
-            config['Twitter']['consumer'],
-            config['Twitter']['consumer_secret']
-        )
-    )
-
     twit.statuses.update(status=s)
 
+
+def respond_to_users():
+    """
+    Respond to @mentions of Blabber_Bot.
+    :return: None
+    """
+
+    with open('replied.json', 'r') as replied_file:
+        replied = json.load(replied_file)['replied']
+
+    time_line = twit.statuses.mentions_timeline(count=200)
+
+    for tweet in time_line:
+        if tweet['id'] in replied:
+            continue
+        id = tweet['id']
+        replied.append(id)
+
+        user = tweet['user']['screen_name']
+        s = generate_sentence()
+        s = ' '.join(('@%s' % user, s))
+
+        send_to_twitter(s)
+
+    with open('replied.json', 'w') as replied_file:
+        json.dump({'replied': replied}, replied_file)
 
 setup_config()
 setup_conn()
 generate_word_list()
 
-send_to_twitter(generate_sentence())
+twit = twitter.Twitter(
+    auth=twitter.OAuth(
+        config['Twitter']['token'],
+        config['Twitter']['token_secret'],
+        config['Twitter']['consumer'],
+        config['Twitter']['consumer_secret']
+    )
+)
+
+desc = 'A bot that speaks its mind. Which is a bunch of gobbledygook.'
+parser = argparse.ArgumentParser()
+
+parser.add_argument('-s', '--speak', help='Speak to the world.', action='store_true')
+parser.add_argument('-r', '--reply', help='Reply to the world.', action='store_true')
+
+args = parser.parse_args()
+
+if args.speak:
+    send_to_twitter(generate_sentence())
+
+if args.reply:
+    respond_to_users()
