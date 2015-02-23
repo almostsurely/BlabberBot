@@ -52,5 +52,11 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+#PyCharm Stuff
 .idea/
+
+#Old Wordnet Database used. Large file.
 WordNet3.1Sqlite.db
+
+#Configuration file, to keep keys from being leaked.
+blabberbot.cfg

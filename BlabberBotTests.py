@@ -17,6 +17,10 @@ class BlabberBotTests(unittest.TestCase):
     def test_connections(self):
         """
         Test necessary connections in BlabberBot.
+        Connections to:
+        Twitter API
+        GraphStory
+        Merriam Webster API
         :return:
         """
 
