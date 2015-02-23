@@ -1,5 +1,8 @@
 __author__ = 'James Dozier'
 
+
+# Comment out old code for complete rewrite.
+'''
 import argparse
 import configparser
 import sqlite3
@@ -139,4 +142,4 @@ if args.speak:
     send_to_twitter(generate_sentence(), None)
 
 if args.reply:
-    respond_to_users()
+    respond_to_users()'''
