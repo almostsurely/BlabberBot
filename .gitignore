@@ -60,3 +60,5 @@ WordNet3.1Sqlite.db
 
 #Configuration file, to keep keys from being leaked.
 ./blabberbot.cfg
+blabberbot.cfg
+
